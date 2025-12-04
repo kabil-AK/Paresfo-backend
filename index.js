@@ -27,9 +27,10 @@ app.use(cookieParser());
 
 app.use('/auth', UserRouter);  
 
-mongoose.connect('mongodb://127.0.0.1:27017/authenticationDB')
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) => console.error('Could not connect to MongoDB...', err));
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch(err => console.error("MongoDB connection error:", err));
+
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
