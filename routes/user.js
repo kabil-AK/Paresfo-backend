@@ -59,11 +59,11 @@ router.post('/forgot-password', async (req, res) => {
             return res.json({status:false, message: 'User not found' });
        }
         const token = jwt.sign({id:user._id},process.env.KEY,{expiresIn:'5m'});
+
         const resetLink = `${process.env.CLIENT_URL}/reset-Password/${token}`;
+
         const transporter = nodemailer.createTransport({
-           host: process.env.EMAIL_HOST,
-            port: process.env.EMAIL_PORT, 
-            secure: false,
+           service: 'gmail',
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
@@ -82,11 +82,12 @@ router.post('/forgot-password', async (req, res) => {
 
              await transporter.sendMail(mailOptions);
 
-             return res.json({ status: true, message: "Email sent successfully" });
+          
+        return res.json({ status: true, message: "Email sent successfully" });
 
-             } catch (error) {
-            console.log(error);
-            return res.json({status:false, message: "Error sending email" });
+    } catch (error) {
+        console.log("EMAIL ERROR:", error);
+        return res.status(500).json({ status: false, message: "Error sending email", error });
     }
 });
 router.post('/reset-password/:token', async(req, res) => {

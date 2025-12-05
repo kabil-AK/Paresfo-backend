@@ -11,13 +11,11 @@ const app = express();
 
 app.use(express.json());
 
-
-
 app.use(cors({
     origin: [
-    "http://localhost:5173",          // local frontend
-    "http://localhost:5174",          // vite sometimes runs here
-    "https://paresfooo.netlify.app"   // your Netlify URL
+    "http://localhost:5173",       
+    "http://localhost:5174",         
+    "https://paresfooo.netlify.app"   
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
