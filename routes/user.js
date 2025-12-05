@@ -56,42 +56,39 @@ router.post('/forgot-password', async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.json({ message: 'User not found' });
-
-        }
+            return res.json({status:false, message: 'User not found' });
+       }
         const token = jwt.sign({id:user._id},process.env.KEY,{expiresIn:'5m'});
-
+        const resetLink = `${process.env.CLIENT_URL}/reset-Password/${token}`;
         const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: process.env.EMAIL_PORT,
+           host: process.env.EMAIL_HOST,
+            port: process.env.EMAIL_PORT, 
+            secure: false,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
             }
-});
-  const resetLink = `${process.env.CLIENT_URL}/reset-Password/${token}`;
-const mailOptions = {
-  from: 'process.env.EMAIL_USER',
-  to: email,
-  subject: 'Reset Password',
-  html: `
+           });
+             const mailOptions = {
+             from: process.env.EMAIL_USER,
+             to: email,
+             subject: 'Reset Password',
+             html: `
                 <p>Click the link below to reset your password:</p>
                 <a href="${resetLink}">${resetLink}</a>
                 <p>This link is valid for 5 minutes.</p>
             `
-};
+             };
 
-await transporter.sendMail(mailOptions);
+             await transporter.sendMail(mailOptions);
 
-        return res.json({ status: true, message: "Email sent successfully" });
+             return res.json({ status: true, message: "Email sent successfully" });
 
-    } catch (error) {
-        console.log(error);
-        return res.json({ message: "Error sending email" });
+             } catch (error) {
+            console.log(error);
+            return res.json({status:false, message: "Error sending email" });
     }
 });
-
-
 router.post('/reset-password/:token', async(req, res) => {
     const { token } = req.params;
     const { password } = req.body;
